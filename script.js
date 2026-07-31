@@ -1,4 +1,4 @@
-// Data koordinat posisi titik meja yang sudah dikoreksi presisi di tengah meja
+// Data koordinat posisi titik meja (x%, y%)
 const tablePositions = {
   // AREA Karpet Cokelat (Kiri)
   1:  { x: 17.5, y: 24.0 },
@@ -85,64 +85,77 @@ const tablePositions = {
 
 let currentSelectedTable = null;
 
-document.addEventListener("DOMContentLoaded", () => {
-  const container = document.getElementById("pinsContainer");
+document.addEventListener("DOMContentLoaded", function () {
+  var container = document.getElementById("pinsContainer");
   if (!container) return;
 
-  for (let i = 1; i <= 76; i++) {
-    const pin = document.createElement("div");
+  for (var i = 1; i <= 76; i++) {
+    var pin = document.createElement("div");
     pin.className = "table-pin";
     pin.innerText = i;
-    
-    const pos = tablePositions[i] || { x: 50, y: 50 };
-    
+
+    var pos = tablePositions[i] || { x: 50, y: 50 };
+
     pin.style.left = pos.x + "%";
     pin.style.top = pos.y + "%";
-    
-    pin.onclick = () => openModal(i);
+
+    (function (tableNum) {
+      pin.onclick = function () {
+        openModal(tableNum);
+      };
+    })(i);
+
     container.appendChild(pin);
   }
 });
 
 function openModal(tableNumber) {
   currentSelectedTable = tableNumber;
-  const modalTitle = document.getElementById("modalTitle");
-  if (modalTitle) modalTitle.innerText = `Daftar Tamu - Meja ${tableNumber}`;
-
-  const savedData = JSON.parse(localStorage.getItem(`table_${tableNumber}`)) || Array(8).fill("");
-
-  for (let i = 1; i <= 8; i++) {
-    const seatInput = document.getElementById(`seat${i}`);
-    if (seatInput) seatInput.value = savedData[i - 1] || "";
+  var modalTitle = document.getElementById("modalTitle");
+  if (modalTitle) {
+    modalTitle.innerText = "Daftar Tamu - Meja " + tableNumber;
   }
 
-  const modal = document.getElementById("guestModal");
-  if (modal) modal.style.display = "flex";
+  var savedData = JSON.parse(localStorage.getItem("table_" + tableNumber)) || ["", "", "", "", "", "", "", ""];
+
+  for (var i = 1; i <= 8; i++) {
+    var seatInput = document.getElementById("seat" + i);
+    if (seatInput) {
+      seatInput.value = savedData[i - 1] || "";
+    }
+  }
+
+  var modal = document.getElementById("guestModal");
+  if (modal) {
+    modal.style.display = "flex";
+  }
 }
 
 function closeModal() {
-  const modal = document.getElementById("guestModal");
-  if (modal) modal.style.display = "none";
+  var modal = document.getElementById("guestModal");
+  if (modal) {
+    modal.style.display = "none";
+  }
 }
 
 function saveGuestData() {
   if (!currentSelectedTable) return;
 
-  const guests = [];
-  for (let i = 1; i <= 8; i++) {
-    const seatInput = document.getElementById(`seat${i}`);
-    const name = seatInput ? seatInput.value.trim() : "";
+  var guests = [];
+  for (var i = 1; i <= 8; i++) {
+    var seatInput = document.getElementById("seat" + i);
+    var name = seatInput ? seatInput.value.trim() : "";
     guests.push(name);
   }
 
-  localStorage.setItem(`table_${currentSelectedTable}`, JSON.stringify(guests));
+  localStorage.setItem("table_" + currentSelectedTable, JSON.stringify(guests));
 
-  alert(`Data Tamu Meja ${currentSelectedTable} berhasil disimpan!`);
+  alert("Data Tamu Meja " + currentSelectedTable + " berhasil disimpan!");
   closeModal();
 }
 
-window.onclick = function(event) {
-  const modal = document.getElementById("guestModal");
+window.onclick = function (event) {
+  var modal = document.getElementById("guestModal");
   if (event.target === modal) {
     closeModal();
   }
