@@ -1,34 +1,127 @@
-const TOTAL_TABLES = 76; 
+// Data koordinat posisi titik meja dalam persentase (x%, y%)
+const tablePositions = {
+  // AREA Karpet Cokelat
+  1:  { x: 17.0, y: 24.5 },
+  2:  { x: 17.0, y: 18.0 },
+  3:  { x: 15.0, y: 12.0 },
+  4:  { x: 20.8, y: 12.0 },
+  5:  { x: 22.8, y: 18.0 },
+  6:  { x: 22.8, y: 24.5 },
+  7:  { x: 26.5, y: 12.0 },
+  8:  { x: 28.5, y: 18.0 },
+  9:  { x: 32.5, y: 12.0 },
+  10: { x: 34.5, y: 18.0 },
+  60: { x: 32.5, y: 20.0 },
+  11: { x: 38.0, y: 12.0 },
+  12: { x: 42.5, y: 20.0 },
+  13: { x: 42.5, y: 12.0 },
+  14: { x: 45.5, y: 18.0 },
+  15: { x: 46.5, y: 12.0 },
+
+  // AREA Karpet Cream
+  16: { x: 52.5, y: 23.5 },
+  17: { x: 52.5, y: 17.5 },
+  18: { x: 52.5, y: 12.0 },
+  19: { x: 58.0, y: 30.5 },
+  20: { x: 58.0, y: 23.5 },
+  21: { x: 58.0, y: 17.5 },
+  22: { x: 58.0, y: 12.0 },
+  23: { x: 63.5, y: 30.5 },
+  24: { x: 63.5, y: 25.5 },
+  25: { x: 63.5, y: 19.5 },
+  26: { x: 63.5, y: 14.5 },
+  27: { x: 69.0, y: 28.5 },
+  28: { x: 69.0, y: 22.5 },
+  29: { x: 69.0, y: 17.5 },
+  30: { x: 69.0, y: 11.5 },
+  31: { x: 74.5, y: 30.5 },
+  32: { x: 74.5, y: 23.5 },
+  33: { x: 74.5, y: 18.0 },
+  34: { x: 74.5, y: 13.0 },
+  35: { x: 79.5, y: 27.5 },
+  36: { x: 79.5, y: 21.0 },
+  37: { x: 79.5, y: 16.0 },
+  38: { x: 79.5, y: 10.5 },
+  39: { x: 85.0, y: 30.5 },
+  40: { x: 85.0, y: 24.5 },
+  41: { x: 85.0, y: 17.5 },
+  42: { x: 85.0, y: 11.5 },
+  43: { x: 90.0, y: 30.5 },
+  44: { x: 90.0, y: 25.0 },
+  45: { x: 90.0, y: 18.5 },
+  46: { x: 90.0, y: 13.5 },
+  47: { x: 90.0, y: 8.5 },
+  48: { x: 95.0, y: 30.5 },
+  49: { x: 95.0, y: 25.0 },
+  50: { x: 95.0, y: 19.0 },
+  51: { x: 95.0, y: 13.5 },
+  52: { x: 95.0, y: 8.5 },
+
+  // AREA OUTDOOR & CAFE
+  53: { x: 73.0, y: 56.5 },
+  54: { x: 76.5, y: 59.5 },
+  55: { x: 81.5, y: 56.5 },
+  56: { x: 85.0, y: 59.5 },
+  57: { x: 92.5, y: 67.5 },
+  58: { x: 86.5, y: 66.5 },
+  59: { x: 80.5, y: 66.5 },
+  61: { x: 74.5, y: 66.5 },
+  62: { x: 67.5, y: 66.5 },
+  63: { x: 61.5, y: 66.5 },
+  64: { x: 55.5, y: 66.5 },
+  65: { x: 55.5, y: 73.0 },
+  66: { x: 62.5, y: 73.0 },
+  67: { x: 68.5, y: 71.0 },
+  68: { x: 75.5, y: 75.5 },
+  69: { x: 80.5, y: 73.0 },
+  70: { x: 86.5, y: 73.0 },
+  71: { x: 69.5, y: 83.5 },
+  72: { x: 73.5, y: 89.0 },
+  73: { x: 77.5, y: 83.5 },
+  74: { x: 81.5, y: 89.0 },
+  75: { x: 85.5, y: 83.5 }
+};
+
 let currentSelectedTable = null;
 
 document.addEventListener("DOMContentLoaded", () => {
-  const tableGrid = document.getElementById("tableGrid");
+  const container = document.getElementById("pinsContainer");
+  if (!container) return;
 
-  for (let i = 1; i <= TOTAL_TABLES; i++) {
-    const tableDiv = document.createElement("div");
-    tableDiv.className = "table-card";
-    tableDiv.onclick = () => openModal(i);
+  for (let i = 1; i <= 76; i++) {
+    const pin = document.createElement("div");
+    pin.className = "table-pin";
+    pin.innerText = i;
     
-    tableDiv.innerHTML = `<div class="table-number">Meja ${i}</div>`;
-    tableGrid.appendChild(tableDiv);
+    const pos = tablePositions[i] || { x: 50, y: 50 };
+    
+    pin.style.left = pos.x + "%";
+    pin.style.top = pos.y + "%";
+    
+    pin.onclick = () => openModal(i);
+    container.appendChild(pin);
   }
 });
 
 function openModal(tableNumber) {
   currentSelectedTable = tableNumber;
-  document.getElementById("modalTitle").innerText = `Daftar Tamu - Meja ${tableNumber}`;
+  const modalTitle = document.getElementById("modalTitle");
+  if (modalTitle) modalTitle.innerText = `Daftar Tamu - Meja ${tableNumber}`;
 
   const savedData = JSON.parse(localStorage.getItem(`table_${tableNumber}`)) || Array(8).fill("");
 
   for (let i = 1; i <= 8; i++) {
-    document.getElementById(`seat${i}`).value = savedData[i - 1] || "";
+    const seatInput = document.getElementById(`seat${i}`);
+    if (seatInput) seatInput.value = savedData[i - 1] || "";
   }
 
-  document.getElementById("guestModal").style.display = "flex";
+  const modal = document.getElementById("guestModal");
+  if (modal) modal.style.display = "flex";
 }
 
 function closeModal() {
-  document.getElementById("guestModal").style.display = "none";
+  const modal = document.getElementById("guestModal");
+  if (modal) modal.style.display = "none";
 }
 
 function saveGuestData() {
@@ -36,7 +129,8 @@ function saveGuestData() {
 
   const guests = [];
   for (let i = 1; i <= 8; i++) {
-    const name = document.getElementById(`seat${i}`).value.trim();
+    const seatInput = document.getElementById(`seat${i}`);
+    const name = seatInput ? seatInput.value.trim() : "";
     guests.push(name);
   }
 
