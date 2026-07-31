@@ -18,39 +18,55 @@ header h1 {
 
 header p {
   color: #7f8c8d;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
 }
 
-.table-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: 15px;
-  max-width: 1000px;
-  margin: 0 auto;
+/* Container Peta/Denah Gambar */
+.map-wrapper {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  overflow-x: auto;
+  border: 2px solid #bdc3c7;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-.table-card {
-  background-color: #ffffff;
-  border: 2px solid #3498db;
-  border-radius: 12px;
-  padding: 20px 10px;
-  cursor: pointer;
-  transition: transform 0.2s, background-color 0.2s;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+.map-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-width: 900px; /* Menjaga ukuran gambar tetap jelas di layar HP */
 }
 
-.table-card:hover {
-  transform: translateY(-4px);
-  background-color: #ebf5fb;
-}
-
-.table-number {
-  font-size: 1.1rem;
+/* Pin/Tombol Klik Meja di Atas Gambar */
+.table-pin {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: rgba(231, 76, 60, 0.7); /* Warna merah transparan */
+  border: 2px solid #ffffff;
+  color: #ffffff;
+  font-size: 11px;
   font-weight: bold;
-  color: #2c3e50;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  transition: transform 0.2s, background-color 0.2s;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
 }
 
-/* Modal */
+.table-pin:hover {
+  transform: translate(-50%, -50%) scale(1.3);
+  background-color: #2ecc71; /* Berubah hijau saat di-hover */
+  z-index: 10;
+}
+
+/* Modal Pop-up */
 .modal {
   display: none; 
   position: fixed; 
