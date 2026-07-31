@@ -3,18 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Denah & Daftar Tamu</title>
+  <title>Denah & Daftar Tamu - The Pendopo Heritage</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <header>
     <h1>Denah & Daftar Tamu Meja</h1>
-    <p>Klik nomor meja untuk melihat/mengedit daftar tamu (8 Orang/Meja)</p>
+    <p>Klik titik nomor meja pada peta untuk melihat & mengedit nama tamu</p>
   </header>
 
-  <!-- Container Grid Meja -->
-  <main class="table-container" id="tableGrid"></main>
+  <!-- Container Denah Gambar -->
+  <main class="map-wrapper">
+    <!-- Pastikan nama file gambar sesuai yang di-upload ke GitHub -->
+    <img src="denah.jpg" alt="Denah Ballroom" class="map-image">
+
+    <!-- Container Hotspot/Pin Meja Interaktif -->
+    <div id="pinsContainer"></div>
+  </main>
 
   <!-- Pop-Up Modal -->
   <div id="guestModal" class="modal">
