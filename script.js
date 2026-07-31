@@ -1,11 +1,11 @@
 // Data koordinat posisi titik meja yang sudah disesuaikan agar rapi
 const tablePositions = {
   // AREA Karpet Cokelat (Kiri)
-  1:  { x: 20.2, y: 24.5 },
-  2:  { x: 20.2, y: 18.0 },
-  3:  { x: 17.8, y: 12.0 },
-  4:  { x: 23.5, y: 12.0 },
-  5:  { x: 25.5, y: 18.0 },
+  1:  { x: 19, y: 24.5 },
+  2:  { x: 19, y: 18.0 },
+  3:  { x: 14, y: 12.0 },
+  4:  { x: 20, y: 12.0 },
+  5:  { x: 22, y: 18.0 },
   6:  { x: 25.5, y: 24.5 },
   7:  { x: 29.2, y: 12.0 },
   8:  { x: 31.2, y: 18.0 },
