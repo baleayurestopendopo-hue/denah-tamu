@@ -1,6 +1,6 @@
-// URL API OpenSheet untuk Tab ke-2 Google Sheets
+// Mengambil data langsung dari Tab ke-3 Google Sheets (gid=458244873)
 const SPREADSHEET_ID = "1cC9Xf2CFO33_BHAOVC3UZtHNNJSIRAjkUNoNmkHQSVU";
-const API_URL = `https://opensheet.elk.sh/${SPREADSHEET_ID}/2`;
+const API_URL = `https://opensheet.elk.sh/${SPREADSHEET_ID}/3`; // Angka 3 untuk Tab ke-3
 
 const tablePositions = {
   // AREA Karpet Cokelat (Kiri)
@@ -71,32 +71,22 @@ function fetchSheetData() {
     .then(data => {
       allGuestData = {};
       data.forEach(row => {
-        var values = Object.values(row);
-        
-        // Cari angka nomor meja dari baris
-        var tableNum = null;
-        for (var i = 0; i < values.length; i++) {
-          var val = parseInt(values[i]);
-          if (!isNaN(val) && val >= 1 && val <= 76) {
-            tableNum = val;
-            break;
-          }
-        }
-
-        if (tableNum) {
-          var names = [];
-          for (var j = 0; j < values.length; j++) {
-            var text = String(values[j]).trim();
-            // Hanya ambil teks yang BUKAN nomor meja, BUKAN teks pendek berulang/kosong
-            if (text && text !== String(tableNum) && isNaN(text) && text.length > 1) {
-              names.push(text);
-            }
-          }
-          allGuestData[tableNum] = names;
+        var tableNum = parseInt(row["Meja"] || row["meja"] || row["NO MEJA"]);
+        if (!isNaN(tableNum)) {
+          allGuestData[tableNum] = [
+            row["Kursi 1"] || "",
+            row["Kursi 2"] || "",
+            row["Kursi 3"] || "",
+            row["Kursi 4"] || "",
+            row["Kursi 5"] || "",
+            row["Kursi 6"] || "",
+            row["Kursi 7"] || "",
+            row["Kursi 8"] || ""
+          ];
         }
       });
     })
-    .catch(error => console.error("Gagal membaca Google Sheets:", error));
+    .catch(error => console.error("Gagal membaca data Google Sheets:", error));
 }
 
 function openModal(tableNumber) {
@@ -106,12 +96,11 @@ function openModal(tableNumber) {
     modalTitle.innerText = "Daftar Tamu - Meja " + tableNumber;
   }
 
-  var savedData = allGuestData[tableNumber] || [];
+  var savedData = allGuestData[tableNumber] || ["", "", "", "", "", "", "", ""];
 
   for (var i = 1; i <= 8; i++) {
     var seatInput = document.getElementById("seat" + i);
     if (seatInput) {
-      // Isi nama tamu sesuai urutan tanpa menyertakan angka nomor meja
       seatInput.value = savedData[i - 1] || "";
     }
   }
