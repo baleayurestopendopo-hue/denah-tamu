@@ -1,6 +1,6 @@
-// URL Google Sheets (ID File: 1cC9Xf2CFO33_BHAOVC3UZtHNNJSIRAjkUNoNmkHQSVU)
-const SHEET_ID = "1cC9Xf2CFO33_BHAOVC3UZtHNNJSIRAjkUNoNmkHQSVU";
-const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv`;
+// Mengambil data langsung dari Tab Sheet 2 (gid=398888358)
+const SPREADSHEET_ID = "1cC9Xf2CFO33_BHAOVC3UZtHNNJSIRAjkUNoNmkHQSVU";
+const API_URL = `https://opensheet.elk.sh/${SPREADSHEET_ID}/2`; // Nomor 2 menandakan Sheet/Tab ke-2
 
 const tablePositions = {
   // AREA Karpet Cokelat (Kiri)
@@ -62,37 +62,32 @@ document.addEventListener("DOMContentLoaded", function () {
     container.appendChild(pin);
   }
 
-  // Load data otomatis dari Google Sheets
+  // Tarik data Google Sheets
   fetchSheetData();
 });
 
-// Fungsi untuk membaca CSV dari Google Sheets
 function fetchSheetData() {
-  fetch(CSV_URL)
-    .then(response => response.text())
-    .then(csvText => {
-      parseCSV(csvText);
-    })
-    .catch(error => console.error("Gagal membaca Google Sheets:", error));
-}
-
-function parseCSV(text) {
-  var lines = text.split("\n");
-  allGuestData = {};
-
-  for (var i = 1; i < lines.length; i++) {
-    var row = lines[i].split(",");
-    if (row.length > 0 && row[0]) {
-      var tableNum = parseInt(row[0].trim());
-      if (!isNaN(tableNum)) {
-        var seats = [];
-        for (var j = 1; j <= 8; j++) {
-          seats.push(row[j] ? row[j].trim().replace(/^"|"$/g, '') : "");
+  fetch(API_URL)
+    .then(response => response.json())
+    .then(data => {
+      allGuestData = {};
+      data.forEach(row => {
+        // Ambil nilai kolom Meja / Table
+        var tableNum = parseInt(row["Meja"] || row["meja"] || row["NO MEJA"] || row["No Meja"] || Object.values(row)[0]);
+        if (!isNaN(tableNum)) {
+          var keys = Object.keys(row);
+          var seats = [];
+          
+          // Ambil nilai 8 kolom nama setelah nomor meja
+          for (var j = 1; j < keys.length && j <= 8; j++) {
+            seats.push(row[keys[j]] || "");
+          }
+          allGuestData[tableNum] = seats;
         }
-        allGuestData[tableNum] = seats;
-      }
-    }
-  }
+      });
+      console.log("Data berhasil ditarik dari Sheets:", allGuestData);
+    })
+    .catch(error => console.error("Gagal menarik data dari Google Sheets:", error));
 }
 
 function openModal(tableNumber) {
