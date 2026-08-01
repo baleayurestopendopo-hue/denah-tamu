@@ -1,6 +1,6 @@
-// Mengambil data langsung dari Tab ke-3 Google Sheets (gid=458244873)
+// Mengambil data dari Tab ke-3 Google Sheets (gid=458244873)
 const SPREADSHEET_ID = "1cC9Xf2CFO33_BHAOVC3UZtHNNJSIRAjkUNoNmkHQSVU";
-const API_URL = `https://opensheet.elk.sh/${SPREADSHEET_ID}/3`; // Angka 3 untuk Tab ke-3
+const API_URL = `https://opensheet.elk.sh/${SPREADSHEET_ID}/3`;
 
 const tablePositions = {
   // AREA Karpet Cokelat (Kiri)
@@ -62,7 +62,13 @@ document.addEventListener("DOMContentLoaded", function () {
     container.appendChild(pin);
   }
 
+  // Tarik data pertama kali saat halaman dibuka
   fetchSheetData();
+
+  // Otomatis cek & perbarui data dari Google Sheets setiap 5 detik
+  setInterval(function () {
+    fetchSheetData();
+  }, 5000);
 });
 
 function fetchSheetData() {
@@ -85,6 +91,11 @@ function fetchSheetData() {
           ];
         }
       });
+
+      // Jika ada pop-up meja yang sedang terbuka, perbarui isinya secara langsung
+      if (currentSelectedTable !== null) {
+        updateActiveModalData();
+      }
     })
     .catch(error => console.error("Gagal membaca data Google Sheets:", error));
 }
@@ -96,14 +107,7 @@ function openModal(tableNumber) {
     modalTitle.innerText = "Daftar Tamu - Meja " + tableNumber;
   }
 
-  var savedData = allGuestData[tableNumber] || ["", "", "", "", "", "", "", ""];
-
-  for (var i = 1; i <= 8; i++) {
-    var seatInput = document.getElementById("seat" + i);
-    if (seatInput) {
-      seatInput.value = savedData[i - 1] || "";
-    }
-  }
+  updateActiveModalData();
 
   var modal = document.getElementById("guestModal");
   if (modal) {
@@ -111,7 +115,20 @@ function openModal(tableNumber) {
   }
 }
 
+function updateActiveModalData() {
+  if (currentSelectedTable === null) return;
+  var savedData = allGuestData[currentSelectedTable] || ["", "", "", "", "", "", "", ""];
+
+  for (var i = 1; i <= 8; i++) {
+    var seatInput = document.getElementById("seat" + i);
+    if (seatInput) {
+      seatInput.value = savedData[i - 1] || "";
+    }
+  }
+}
+
 function closeModal() {
+  currentSelectedTable = null;
   var modal = document.getElementById("guestModal");
   if (modal) {
     modal.style.display = "none";
