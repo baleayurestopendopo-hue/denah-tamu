@@ -1,4 +1,4 @@
-// Mengambil data dari Tab ke-3 Google Sheets (gid=458244873)
+// URL API OpenSheet untuk Tab ke-3 Google Sheets
 const SPREADSHEET_ID = "1cC9Xf2CFO33_BHAOVC3UZtHNNJSIRAjkUNoNmkHQSVU";
 const API_URL = `https://opensheet.elk.sh/${SPREADSHEET_ID}/3`;
 
@@ -62,10 +62,9 @@ document.addEventListener("DOMContentLoaded", function () {
     container.appendChild(pin);
   }
 
-  // Tarik data pertama kali saat halaman dibuka
   fetchSheetData();
 
-  // Otomatis cek & perbarui data dari Google Sheets setiap 5 detik
+  // Auto Refresh setiap 5 detik
   setInterval(function () {
     fetchSheetData();
   }, 5000);
@@ -77,27 +76,27 @@ function fetchSheetData() {
     .then(data => {
       allGuestData = {};
       data.forEach(row => {
-        var tableNum = parseInt(row["Meja"] || row["meja"] || row["NO MEJA"]);
-        if (!isNaN(tableNum)) {
-          allGuestData[tableNum] = [
-            row["Kursi 1"] || "",
-            row["Kursi 2"] || "",
-            row["Kursi 3"] || "",
-            row["Kursi 4"] || "",
-            row["Kursi 5"] || "",
-            row["Kursi 6"] || "",
-            row["Kursi 7"] || "",
-            row["Kursi 8"] || ""
-          ];
+        var values = Object.values(row);
+        if (values.length === 0) return;
+
+        // Ambil nomor meja dari kolom pertama
+        var tableNum = parseInt(values[0]);
+
+        if (!isNaN(tableNum) && tableNum >= 1 && tableNum <= 76) {
+          var seats = [];
+          // Ambil nilai dari kolom ke-2 sampai ke-9 (Kursi 1-8)
+          for (var k = 1; k < values.length && k <= 8; k++) {
+            seats.push(String(values[k] || "").trim());
+          }
+          allGuestData[tableNum] = seats;
         }
       });
 
-      // Jika ada pop-up meja yang sedang terbuka, perbarui isinya secara langsung
       if (currentSelectedTable !== null) {
         updateActiveModalData();
       }
     })
-    .catch(error => console.error("Gagal membaca data Google Sheets:", error));
+    .catch(error => console.error("Gagal membaca Google Sheets:", error));
 }
 
 function openModal(tableNumber) {
