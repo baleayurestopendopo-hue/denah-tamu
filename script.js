@@ -1,6 +1,6 @@
-// URL API OpenSheet untuk membaca Tab ke-1 (gid=398888358)
+// Memanggil data langsung dari tab "Sheet2"
 const SPREADSHEET_ID = "1cC9Xf2CFO33_BHAOVC3UZtHNNJSIRAjkUNoNmkHQSVU";
-const API_URL = `https://opensheet.elk.sh/${SPREADSHEET_ID}/1`; // 1 = Tab Pertama (Sheet1)
+const API_URL = `https://opensheet.elk.sh/${SPREADSHEET_ID}/Sheet2`;
 
 const tablePositions = {
   // AREA Karpet Cokelat (Kiri)
@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   fetchSheetData();
 
-  // Auto Refresh data setiap 5 detik
+  // Update otomatis tiap 5 detik
   setInterval(function () {
     fetchSheetData();
   }, 5000);
@@ -75,50 +75,29 @@ function fetchSheetData() {
     .then(response => response.json())
     .then(data => {
       allGuestData = {};
-      
-      let currentTableCol1 = null;
-      let currentTableCol2 = null;
-      let currentTableCol3 = null;
-      let currentTableCol4 = null;
-
       data.forEach(row => {
-        let keys = Object.keys(row);
-        
-        // Cek header Meja di tiap kelompok kolom
-        keys.forEach(k => {
-          let val = String(row[k] || "").trim();
-          if (val.toLowerCase().startsWith("meja ")) {
-            let num = parseInt(val.replace(/[^0-9]/g, ''));
-            if (!isNaN(num)) {
-              if (k.includes("Meja 1") || k.includes("1")) currentTableCol1 = num;
-              else if (k.includes("Meja 21") || k.includes("21")) currentTableCol2 = num;
-              else if (k.includes("Meja 41") || k.includes("41")) currentTableCol3 = num;
-              else if (k.includes("Meja 61") || k.includes("61")) currentTableCol4 = num;
-            }
-          }
-        });
+        // Tarik semua data per baris
+        var values = Object.values(row);
+        if (values.length === 0) return;
 
-        // Ekstrak nama tamu untuk tiap kolom meja
-        let values = Object.values(row);
-        
-        // Posisikan nama tamu ke nomor meja yang sedang aktif
-        keys.forEach((k, idx) => {
-          let text = String(row[k] || "").trim();
-          if (text && !text.toLowerCase().startsWith("meja") && text !== "No" && isNaN(text)) {
-            let tableNum = null;
-            if (idx <= 1) tableNum = currentTableCol1;
-            else if (idx <= 3) tableNum = currentTableCol2;
-            else if (idx <= 5) tableNum = currentTableCol3;
-            else tableNum = currentTableCol4;
+        // Ambil nilai kolom pertama (Kolom A / Meja)
+        var tableNum = parseInt(values[0]);
 
-            if (tableNum) {
-              if (!allGuestData[tableNum]) allGuestData[tableNum] = [];
-              if (allGuestData[tableNum].length < 8 && !allGuestData[tableNum].includes(text)) {
-                allGuestData[tableNum].push(text);
-              }
-            }
-          }
-        });
+        if (!isNaN(tableNum) && tableNum >= 1 && tableNum <= 76) {
+          // Ambil Kursi 1 sampai 8 dari kolom B sampai I, seandainya nama kolom diganti sekalipun tetap terbaca
+          var seats = [
+            row["Kursi 1"] || values[1] || "",
+            row["Kursi 2"] || values[2] || "",
+            row["Kursi 3"] || values[3] || "",
+            row["Kursi 4"] || values[4] || "",
+            row["Kursi 5"] || values[5] || "",
+            row["Kursi 6"] || values[6] || "",
+            row["Kursi 7"] || values[7] || "",
+            row["Kursi 8"] || values[8] || ""
+          ];
+          
+          allGuestData[tableNum] = seats;
+        }
       });
 
       if (currentSelectedTable !== null) {
@@ -145,7 +124,7 @@ function openModal(tableNumber) {
 
 function updateActiveModalData() {
   if (currentSelectedTable === null) return;
-  var savedData = allGuestData[currentSelectedTable] || [];
+  var savedData = allGuestData[currentSelectedTable] || ["", "", "", "", "", "", "", ""];
 
   for (var i = 1; i <= 8; i++) {
     var seatInput = document.getElementById("seat" + i);
