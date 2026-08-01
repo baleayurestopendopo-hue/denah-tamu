@@ -1,6 +1,6 @@
-// Mengambil data langsung dari Tab Sheet 2 (gid=398888358)
+// URL API OpenSheet untuk Tab ke-2 Google Sheets
 const SPREADSHEET_ID = "1cC9Xf2CFO33_BHAOVC3UZtHNNJSIRAjkUNoNmkHQSVU";
-const API_URL = `https://opensheet.elk.sh/${SPREADSHEET_ID}/2`; // Nomor 2 menandakan Sheet/Tab ke-2
+const API_URL = `https://opensheet.elk.sh/${SPREADSHEET_ID}/2`;
 
 const tablePositions = {
   // AREA Karpet Cokelat (Kiri)
@@ -62,7 +62,6 @@ document.addEventListener("DOMContentLoaded", function () {
     container.appendChild(pin);
   }
 
-  // Tarik data Google Sheets
   fetchSheetData();
 });
 
@@ -72,22 +71,32 @@ function fetchSheetData() {
     .then(data => {
       allGuestData = {};
       data.forEach(row => {
-        // Ambil nilai kolom Meja / Table
-        var tableNum = parseInt(row["Meja"] || row["meja"] || row["NO MEJA"] || row["No Meja"] || Object.values(row)[0]);
-        if (!isNaN(tableNum)) {
-          var keys = Object.keys(row);
-          var seats = [];
-          
-          // Ambil nilai 8 kolom nama setelah nomor meja
-          for (var j = 1; j < keys.length && j <= 8; j++) {
-            seats.push(row[keys[j]] || "");
+        var values = Object.values(row);
+        
+        // Cari angka nomor meja dari baris
+        var tableNum = null;
+        for (var i = 0; i < values.length; i++) {
+          var val = parseInt(values[i]);
+          if (!isNaN(val) && val >= 1 && val <= 76) {
+            tableNum = val;
+            break;
           }
-          allGuestData[tableNum] = seats;
+        }
+
+        if (tableNum) {
+          var names = [];
+          for (var j = 0; j < values.length; j++) {
+            var text = String(values[j]).trim();
+            // Hanya ambil teks yang BUKAN nomor meja, BUKAN teks pendek berulang/kosong
+            if (text && text !== String(tableNum) && isNaN(text) && text.length > 1) {
+              names.push(text);
+            }
+          }
+          allGuestData[tableNum] = names;
         }
       });
-      console.log("Data berhasil ditarik dari Sheets:", allGuestData);
     })
-    .catch(error => console.error("Gagal menarik data dari Google Sheets:", error));
+    .catch(error => console.error("Gagal membaca Google Sheets:", error));
 }
 
 function openModal(tableNumber) {
@@ -97,11 +106,12 @@ function openModal(tableNumber) {
     modalTitle.innerText = "Daftar Tamu - Meja " + tableNumber;
   }
 
-  var savedData = allGuestData[tableNumber] || ["", "", "", "", "", "", "", ""];
+  var savedData = allGuestData[tableNumber] || [];
 
   for (var i = 1; i <= 8; i++) {
     var seatInput = document.getElementById("seat" + i);
     if (seatInput) {
+      // Isi nama tamu sesuai urutan tanpa menyertakan angka nomor meja
       seatInput.value = savedData[i - 1] || "";
     }
   }
